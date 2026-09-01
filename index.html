@@ -4,92 +4,1547 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Peminjaman Motor</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .user-badge {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .btn-logout {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 8px;
+            background: #ff4444;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #cc0000;
+        }
+
+        /* ===== TABS ===== */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            background: white;
+            color: #333;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            flex: 1;
+            min-width: 100px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .tab-btn.active {
+            background: #1a237e;
+            color: white;
+            box-shadow: 0 4px 12px rgba(26, 35, 126, 0.3);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: #e8eaf6;
+        }
+
+        .tab-badge {
+            background: #ff5722;
+            color: white;
+            border-radius: 50%;
+            padding: 1px 8px;
+            font-size: 11px;
+            margin-left: 4px;
+        }
+
+        /* ===== FILTER ===== */
+        .filter-section {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-section select {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .filter-section select:focus {
+            outline: none;
+            border-color: #1a237e;
+        }
+
+        .search-box {
+            flex: 2;
+            min-width: 150px;
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #1a237e;
+        }
+
+        .motor-count {
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        /* ===== MOTOR GRID ===== */
+        .motor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .motor-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 5px solid #4caf50;
+        }
+
+        .motor-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .motor-card.dipinjam {
+            border-left-color: #f44336;
+            opacity: 0.85;
+        }
+
+        .motor-card .nopol {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a237e;
+        }
+
+        .motor-card .tipe {
+            font-size: 14px;
+            color: #666;
+            margin: 4px 0;
+        }
+
+        .motor-card .kategori {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            background: #e8eaf6;
+            color: #1a237e;
+            margin-top: 4px;
+        }
+
+        .motor-card .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .motor-card .status.tersedia {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .motor-card .status.dipinjam {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+
+        .motor-card .peminjam {
+            font-size: 13px;
+            color: #555;
+            margin-top: 4px;
+        }
+
+        .motor-card .btn-pinjam {
+            margin-top: 12px;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #1a237e;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+        }
+
+        .motor-card .btn-pinjam:hover:not(:disabled) {
+            background: #0d47a1;
+        }
+
+        .motor-card .btn-pinjam:disabled {
+            background: #bdbdbd;
+            cursor: not-allowed;
+        }
+
+        /* ===== FORM ===== */
+        .form-section {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            margin-top: 24px;
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .form-section h2 {
+            font-size: 20px;
+            color: #1a237e;
+            margin-bottom: 8px;
+        }
+
+        .form-section .sub-info {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .form-group label .required {
+            color: #f44336;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1a237e;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .btn-submit {
+            padding: 12px 32px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(26, 35, 126, 0.3);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ===== APPROVAL SECTION ===== */
+        .approval-section {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            margin-top: 24px;
+            display: none;
+        }
+
+        .approval-section.active {
+            display: block;
+        }
+
+        .approval-section h2 {
+            font-size: 20px;
+            color: #1a237e;
+            margin-bottom: 8px;
+        }
+
+        .approval-item {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 4px solid #ff9800;
+        }
+
+        .approval-item .approval-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .approval-item .approval-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .approval-item .approval-detail {
+            font-size: 13px;
+            color: #555;
+            margin-top: 4px;
+        }
+
+        .approval-item .approval-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .approval-item .btn-approve {
+            padding: 6px 20px;
+            border: none;
+            border-radius: 6px;
+            background: #4caf50;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .approval-item .btn-approve:hover {
+            background: #388e3c;
+        }
+
+        .approval-item .btn-reject {
+            padding: 6px 20px;
+            border: none;
+            border-radius: 6px;
+            background: #f44336;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .approval-item .btn-reject:hover {
+            background: #c62828;
+        }
+
+        .approval-item .status-badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .approval-item .status-badge.pending {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .approval-item .status-badge.approved {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .approval-item .status-badge.rejected {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+
+        /* ===== MY REQUESTS ===== */
+        .my-requests-section {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            margin-top: 24px;
+            display: none;
+        }
+
+        .my-requests-section.active {
+            display: block;
+        }
+
+        .my-requests-section h2 {
+            font-size: 20px;
+            color: #1a237e;
+            margin-bottom: 16px;
+        }
+
+        .request-item {
+            background: #f8f9fa;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .request-item .request-info {
+            font-size: 14px;
+        }
+
+        .request-item .request-info .nopol {
+            font-weight: 600;
+        }
+
+        .request-item .request-status {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .request-item .request-status.pending {
+            color: #e65100;
+        }
+        .request-item .request-status.approved {
+            color: #2e7d32;
+        }
+        .request-item .request-status.rejected {
+            color: #c62828;
+        }
+
+        .request-item .request-status .step-info {
+            font-weight: 400;
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* ===== LOG SECTION ===== */
+        .log-section {
+            margin-top: 16px;
+            padding: 16px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-size: 13px;
+            display: none;
+        }
+
+        .log-section.active {
+            display: block;
+        }
+
+        .log-section h3 {
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: #1a237e;
+        }
+
+        .log-entry {
+            padding: 6px 0;
+            border-bottom: 1px solid #e0e0e0;
+            color: #333;
+        }
+
+        .log-entry .time {
+            color: #888;
+            font-size: 11px;
+        }
+
+        .log-entry .badge {
+            display: inline-block;
+            padding: 1px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        .log-entry .badge.pending {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        .log-entry .badge.approved {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+        .log-entry .badge.rejected {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+        .log-entry .badge.info {
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+
+        /* ===== NOTIFICATION ===== */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            z-index: 9999;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.4s ease;
+            max-width: 90%;
+            cursor: pointer;
+        }
+
+        .notification.success {
+            background: #2e7d32;
+        }
+        .notification.error {
+            background: #c62828;
+        }
+        .notification.info {
+            background: #0d47a1;
+        }
+        .notification.warning {
+            background: #e65100;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* ===== LOGIN OVERLAY ===== */
+        .login-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-overlay.active {
+            display: flex;
+        }
+
+        .login-modal {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-modal h2 {
+            text-align: center;
+            color: #1a237e;
+            margin-bottom: 24px;
+        }
+
+        .login-modal .form-group {
+            margin-bottom: 16px;
+        }
+
+        .login-modal .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: #1a237e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .login-modal .btn-login:hover {
+            background: #0d47a1;
+        }
+
+        .login-error {
+            color: #c62828;
+            text-align: center;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        .login-modal .demo-accounts {
+            margin-top: 16px;
+            font-size: 13px;
+            color: #888;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .login-modal .demo-accounts strong {
+            color: #333;
+        }
+
+        /* ===== TAB CONTENT ===== */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .motor-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs .tab-btn {
+                font-size: 12px;
+                padding: 8px 12px;
+                min-width: 60px;
+            }
+
+            .filter-section {
+                flex-direction: column;
+            }
+
+            .filter-section select,
+            .filter-section .search-box {
+                width: 100%;
+                min-width: unset;
+            }
+
+            .notification {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                max-width: unset;
+                font-size: 14px;
+                padding: 12px 16px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+
+            .header-right {
+                justify-content: center;
+            }
+
+            .login-modal {
+                padding: 24px;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .motor-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+            grid-column: 1 / -1;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>🏍️ Peminjaman Motor</h1>
-            <p>Kelola peminjaman motor dengan mudah</p>
-        </div>
 
-        <!-- Tabs -->
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="daftar">📋 Daftar Motor</button>
-            <button class="tab-btn" data-tab="form">📝 Form Peminjaman</button>
-            <button class="tab-btn" data-tab="log">📊 Log Aktivitas</button>
-        </div>
-
-        <!-- Filter -->
-        <div class="filter-section" id="filterSection">
-            <select id="filterKategori">
-                <option value="all">Semua Kategori</option>
-                <option value="MATIC">MATIC</option>
-                <option value="SPORT">SPORT</option>
-                <option value="BIGBIKE">BIGBIKE</option>
-                <option value="BOX HMS">BOX HMS</option>
-                <option value="EV">EV</option>
-                <option value="SPORT OK">SPORT OK</option>
-            </select>
-            <select id="filterStatus">
-                <option value="all">Semua Status</option>
-                <option value="TERSEDIA">Tersedia</option>
-                <option value="DIPINJAM">Dipinjam</option>
-            </select>
-            <input type="text" class="search-box" id="searchMotor" placeholder="🔍 Cari Nopol atau Tipe...">
-        </div>
-
-        <!-- Motor List -->
-        <div id="motorList" class="motor-grid"></div>
-
-        <!-- Form Section -->
-        <div class="form-section" id="formSection">
-            <h2>📝 Form Peminjaman Motor</h2>
-            <form id="pinjamForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="nama">Nama Lengkap</label>
-                        <input type="text" id="nama" placeholder="Masukkan nama" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" placeholder="email@domain.com" required>
-                    </div>
+    <!-- ============================================================= -->
+    <!--  LOGIN OVERLAY -->
+    <!-- ============================================================= -->
+    <div class="login-overlay active" id="loginOverlay">
+        <div class="login-modal">
+            <h2>🔐 Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="Masukkan email" required>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="dept">Departemen</label>
-                        <input type="text" id="dept" placeholder="Departemen / Divisi" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="tujuan">Tujuan Peminjaman</label>
-                        <input type="text" id="tujuan" placeholder="Tujuan peminjaman" required>
-                    </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Masukkan password" required>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="tanggal">Tanggal Peminjaman</label>
-                        <input type="date" id="tanggal" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="nopol">Nomor Polisi</label>
-                        <select id="nopol" required>
-                            <option value="">Pilih Motor</option>
-                        </select>
-                    </div>
-                </div>
-                <button type="submit" class="btn-submit" id="submitPinjam">Ajukan Peminjaman</button>
+                <button type="submit" class="btn-login">Login</button>
+                <div class="login-error" id="loginError"></div>
             </form>
-        </div>
-
-        <!-- Log Section -->
-        <div class="log-section" id="logSection">
-            <h3 style="margin-bottom:8px;font-size:16px;color:#1a237e;">📊 Log Aktivitas</h3>
-            <div id="logEntries"></div>
+            <div class="demo-accounts">
+                <p><strong>Akun Demo:</strong></p>
+                <p>User: <strong>user@email.com</strong> / password123</p>
+                <p>GA: <strong>ftrwhyni15@gmail.com</strong> / password123</p>
+                <p>Kepala: <strong>fitriwahyuni336@gmail.com</strong> / password123</p>
+                <p>Security: <strong>ftrkey@gmail.com</strong> / password123</p>
+            </div>
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <!-- ============================================================= -->
+    <!--  MAIN APP -->
+    <!-- ============================================================= -->
+    <div class="container" id="appContent" style="display:none;">
+
+        <!-- HEADER -->
+        <div class="header">
+            <div>
+                <h1>🏍️ Peminjaman Motor</h1>
+                <p>Sistem persetujuan 3 tahap: GA → Kepala → Security</p>
+            </div>
+            <div class="header-right">
+                <span class="user-badge" id="userBadge">👤 User</span>
+                <span class="user-badge" id="userRoleBadge" style="background:rgba(255,255,255,0.08);">role</span>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="motor">📋 Motor</button>
+            <button class="tab-btn" data-tab="form">📝 Pinjam</button>
+            <button class="tab-btn" data-tab="requests">📊 Pengajuan Saya</button>
+            <button class="tab-btn" data-tab="approval" id="approvalTab" style="display:none;">
+                ✅ Persetujuan <span class="tab-badge" id="approvalBadge">0</span>
+            </button>
+            <button class="tab-btn" data-tab="log">📜 Log</button>
+        </div>
+
+        <!-- ===== TAB 1: MOTOR ===== -->
+        <div class="tab-content active" id="tab-motor">
+            <div class="filter-section">
+                <select id="filterKategori">
+                    <option value="all">Semua Kategori</option>
+                    <option value="MATIC">MATIC</option>
+                    <option value="SPORT">SPORT</option>
+                    <option value="BIGBIKE">BIGBIKE</option>
+                    <option value="BOX HMS">BOX HMS</option>
+                    <option value="EV">EV</option>
+                    <option value="SPORT OK">SPORT OK</option>
+                </select>
+                <select id="filterStatus">
+                    <option value="all">Semua Status</option>
+                    <option value="TERSEDIA">Tersedia</option>
+                    <option value="DIPINJAM">Dipinjam</option>
+                </select>
+                <input type="text" class="search-box" id="searchMotor" placeholder="🔍 Cari Nopol atau Tipe...">
+                <span class="motor-count" id="motorCount"></span>
+            </div>
+            <div id="motorList" class="motor-grid"></div>
+        </div>
+
+        <!-- ===== TAB 2: FORM ===== -->
+        <div class="tab-content" id="tab-form">
+            <div class="form-section active">
+                <h2>📝 Form Peminjaman Motor</h2>
+                <p class="sub-info">Pengajuan akan disetujui oleh: <strong>GA → Kepala → Security</strong></p>
+                <form id="pinjamForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nama Lengkap <span class="required">*</span></label>
+                            <input type="text" id="nama" placeholder="Masukkan nama" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email <span class="required">*</span></label>
+                            <input type="email" id="email" placeholder="email@domain.com" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Departemen <span class="required">*</span></label>
+                            <input type="text" id="dept" placeholder="Departemen / Divisi" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Tujuan Peminjaman <span class="required">*</span></label>
+                            <input type="text" id="tujuan" placeholder="Tujuan peminjaman" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tanggal Peminjaman <span class="required">*</span></label>
+                            <input type="date" id="tanggal" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Nomor Polisi <span class="required">*</span></label>
+                            <select id="nopol" required>
+                                <option value="">Pilih Motor</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit" id="submitPinjam">Ajukan Peminjaman</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ===== TAB 3: MY REQUESTS ===== -->
+        <div class="tab-content" id="tab-requests">
+            <div class="my-requests-section active">
+                <h2>📊 Pengajuan Saya</h2>
+                <div id="myRequestsList">
+                    <p style="color:#888;text-align:center;padding:20px;">Belum ada pengajuan</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TAB 4: APPROVAL ===== -->
+        <div class="tab-content" id="tab-approval">
+            <div class="approval-section active">
+                <h2>✅ Persetujuan Peminjaman</h2>
+                <p class="sub-info">Anda adalah salah satu penyetuju. Silakan review pengajuan di bawah ini.</p>
+                <div id="approvalList">
+                    <p style="color:#888;text-align:center;padding:20px;">Tidak ada pengajuan yang perlu disetujui</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TAB 5: LOG ===== -->
+        <div class="tab-content" id="tab-log">
+            <div class="log-section active">
+                <h3>📜 Log Aktivitas</h3>
+                <div id="logEntries"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ============================================================= -->
+    <!--  JAVASCRIPT -->
+    <!-- ============================================================= -->
+    <script>
+        // ============================================================
+        //  DATA MOTOR (DARI FILE ANDA)
+        // ============================================================
+        const motorData = [
+            { nopol: "B5502TSB", kategori: "MATIC", tipe: "STYLO CBS", peminjam: "JHC", status: "DIPINJAM" },
+            { nopol: "B5048TYK", kategori: "MATIC", tipe: "BEAT STREET", peminjam: "TRIMUL", status: "DIPINJAM" },
+            { nopol: "B5639TGX", kategori: "SPORT", tipe: "CBR 250G", peminjam: "JHC", status: "DIPINJAM" },
+            { nopol: "B5486TDF", kategori: "MATIC", tipe: "GENIO", peminjam: "IBOY", status: "DIPINJAM" },
+            { nopol: "B5476TDG", kategori: "MATIC", tipe: "ADV 150", peminjam: "MARIO", status: "DIPINJAM" },
+            { nopol: "B5367TIB", kategori: "MATIC", tipe: "PCX 160", peminjam: "RAFI", status: "DIPINJAM" },
+            { nopol: "B5082TMR", kategori: "MATIC", tipe: "VARIO 125", peminjam: "SURIP ROMLI", status: "DIPINJAM" },
+            { nopol: "B4667TNW", kategori: "BOX HMS", tipe: "BRANDING SUPRA GTR 150", peminjam: "ABC", status: "DIPINJAM" },
+            { nopol: "B3469UPK", kategori: "SPORT", tipe: "CBR 250 RR", peminjam: "ABC", status: "DIPINJAM" },
+            { nopol: "H2197OH", kategori: "BIGBIKE", tipe: "REBEL (MUTASI FR SEMARANG)", peminjam: "ABC", status: "DIPINJAM" },
+            { nopol: "B5950TWI", kategori: "EV", tipe: "EM1 (JHC)", peminjam: "JHC", status: "DIPINJAM" },
+            { nopol: "B5386TWN", kategori: "EV", tipe: "CUV", peminjam: "ABC", status: "DIPINJAM" },
+            { nopol: "B4258TWA", kategori: "SPORT", tipe: "CRF 150", peminjam: "JHC", status: "DIPINJAM" },
+            { nopol: "B3167UVU", kategori: "BIGBIKE", tipe: "ADV 750", peminjam: "JHC", status: "DIPINJAM" },
+            { nopol: "B5236TFY", kategori: "BOX HMS", tipe: "BRANDING PCX 150", peminjam: "JHC", status: "DIPINJAM" },
+            { nopol: "B4319TPV", kategori: "SPORT", tipe: "CRF 250", peminjam: "JHC", status: "DIPINJAM" },
+            { nopol: "B3858PJE", kategori: "BIGBIKE", tipe: "GOLDWING", peminjam: "ABC", status: "DIPINJAM" },
+            { nopol: "B5724TII", kategori: "BIGBIKE", tipe: "CB 500", peminjam: "JHC", status: "DIPINJAM" },
+            { nopol: "B5319TJU", kategori: "SPORT OK", tipe: "CB150X STD", peminjam: "JHC", status: "DIPINJAM" },
+            { nopol: "B5422TIB", kategori: "SPORT", tipe: "CBR 150", peminjam: "JHC", status: "DIPINJAM" },
+            { nopol: "B5290TKF", kategori: "MATIC", tipe: "VARIO 160", peminjam: "ABC", status: "DIPINJAM" },
+            { nopol: "B5038TLF", kategori: "MATIC", tipe: "ADV 160", peminjam: "JHC", status: "DIPINJAM" },
+            { nopol: "B5536TRL", kategori: "BIGBIKE", tipe: "CB 650R", peminjam: "AFIT/BEKASI EVENT HOC", status: "DIPINJAM" },
+            { nopol: "B5833TWH", kategori: "EV", tipe: "EM1", peminjam: "JHC", status: "DIPINJAM" },
+            { nopol: "B5832TWH", kategori: "EV", tipe: "EM1", peminjam: "ABC", status: "DIPINJAM" },
+            { nopol: "B5585TUU", kategori: "MATIC", tipe: "SCOOPY ENERGETIC", peminjam: "RAIMON", status: "DIPINJAM" },
+            { nopol: "B5868TUY", kategori: "MATIC", tipe: "PCX ROADSYNC", peminjam: "ABC", status: "DIPINJAM" },
+            { nopol: "B5423TWN", kategori: "EV", tipe: "CUV", peminjam: "JHC", status: "DIPINJAM" },
+            { nopol: "B6302RAB", kategori: "MATIC", tipe: "ADV 160 Roadsync", peminjam: "JHC", status: "DIPINJAM" },
+            { nopol: "B5584TUU", kategori: "MATIC", tipe: "PCX ROADSYNC", peminjam: "AFIT/BEKASI EVENT HOC",
+                status: "DIPINJAM" },
+            { nopol: "B6296RAT", kategori: "MATIC", tipe: "CB150 R", peminjam: "", status: "TERSEDIA" },
+            { nopol: "B6919RBM", kategori: "MATIC", tipe: "NEW VARIO 125", peminjam: "JHC", status: "DIPINJAM" },
+            { nopol: "B6497RCC", kategori: "MATIC", tipe: "STYLO BURGUNDY", peminjam: "", status: "TERSEDIA" }
+        ];
+
+        // ============================================================
+        //  KONFIGURASI
+        // ============================================================
+        const APPROVERS = [
+            { name: 'GA', email: 'ftrwhyni15@gmail.com' },
+            { name: 'Kepala', email: 'fitriwahyuni336@gmail.com' },
+            { name: 'Security', email: 'ftrkey@gmail.com' }
+        ];
+
+        const APPROVER_EMAILS = APPROVERS.map(a => a.email);
+
+        const USERS = [
+            // User biasa
+            { email: 'user@email.com', password: 'password123', name: 'User Demo', role: 'user' },
+            // 3 Penyetuju
+            { email: 'ftrwhyni15@gmail.com', password: 'password123', name: 'GA', role: 'approver' },
+            { email: 'fitriwahyuni336@gmail.com', password: 'password123', name: 'Kepala', role: 'approver' },
+            { email: 'ftrkey@gmail.com', password: 'password123', name: 'Security', role: 'approver' }
+        ];
+
+        // ============================================================
+        //  STATE
+        // ============================================================
+        let motors = motorData.map(m => ({ ...m }));
+        let requests = [];
+        let logs = [];
+        let currentUser = null;
+        let isLoggedIn = false;
+        let requestIdCounter = 1;
+
+        // ============================================================
+        //  DOM REFS
+        // ============================================================
+        const motorListEl = document.getElementById('motorList');
+        const filterKategori = document.getElementById('filterKategori');
+        const filterStatus = document.getElementById('filterStatus');
+        const searchMotor = document.getElementById('searchMotor');
+        const motorCount = document.getElementById('motorCount');
+        const nopolSelect = document.getElementById('nopol');
+        const pinjamForm = document.getElementById('pinjamForm');
+        const loginOverlay = document.getElementById('loginOverlay');
+        const appContent = document.getElementById('appContent');
+        const userBadge = document.getElementById('userBadge');
+        const userRoleBadge = document.getElementById('userRoleBadge');
+        const approvalTab = document.getElementById('approvalTab');
+        const approvalBadge = document.getElementById('approvalBadge');
+        const approvalList = document.getElementById('approvalList');
+        const myRequestsList = document.getElementById('myRequestsList');
+        const logEntries = document.getElementById('logEntries');
+        const submitBtn = document.getElementById('submitPinjam');
+
+        // ============================================================
+        //  NOTIFICATION
+        // ============================================================
+        function showNotification(message, type = 'info') {
+            // Browser notification
+            if ('Notification' in window && Notification.permission === 'granted') {
+                try {
+                    new Notification('Peminjaman Motor', { body: message, icon: '🏍️' });
+                } catch (e) { /* silent */ }
+            }
+
+            // In-app notification
+            const notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            notif.textContent = message;
+            document.body.appendChild(notif);
+            setTimeout(() => {
+                notif.style.opacity = '0';
+                notif.style.transition = 'opacity 0.4s';
+                setTimeout(() => notif.remove(), 400);
+            }, 5000);
+        }
+
+        // Request notification permission
+        if ('Notification' in window) {
+            Notification.requestPermission();
+        }
+
+        // ============================================================
+        //  LOG
+        // ============================================================
+        function addLog(message, badge = null) {
+            const time = new Date().toLocaleString('id-ID');
+            logs.unshift({ time, message, badge });
+            renderLogs();
+        }
+
+        function renderLogs() {
+            logEntries.innerHTML = logs.slice(0, 100).map(l => {
+                const badgeHtml = l.badge ? `<span class="badge ${l.badge}">${l.badge}</span>` : '';
+                return `<div class="log-entry"><span class="time">${l.time}</span> - ${l.message} ${badgeHtml}</div>`;
+            }).join('');
+        }
+
+        // ============================================================
+        //  RENDER MOTORS
+        // ============================================================
+        function renderMotors() {
+            const kategori = filterKategori.value;
+            const status = filterStatus.value;
+            const search = searchMotor.value.toLowerCase();
+
+            let filtered = motors.filter(m => {
+                const matchKategori = kategori === 'all' || m.kategori === kategori;
+                const matchStatus = status === 'all' || m.status === status;
+                const matchSearch = m.nopol.toLowerCase().includes(search) ||
+                    m.tipe.toLowerCase().includes(search);
+                return matchKategori && matchStatus && matchSearch;
+            });
+
+            motorCount.textContent = `${filtered.length} dari ${motors.length} motor`;
+
+            if (filtered.length === 0) {
+                motorListEl.innerHTML = `<div class="empty-state">Tidak ada motor yang sesuai</div>`;
+                return;
+            }
+
+            motorListEl.innerHTML = filtered.map(m => `
+                <div class="motor-card ${m.status === 'DIPINJAM' ? 'dipinjam' : ''}">
+                    <div class="nopol">${m.nopol}</div>
+                    <div class="tipe">${m.tipe}</div>
+                    <span class="kategori">${m.kategori}</span>
+                    <br>
+                    <span class="status ${m.status === 'TERSEDIA' ? 'tersedia' : 'dipinjam'}">
+                        ${m.status === 'TERSEDIA' ? '✅ Tersedia' : '🔴 Dipinjam'}
+                    </span>
+                    ${m.peminjam ? `<div class="peminjam">👤 ${m.peminjam}</div>` : ''}
+                    <button class="btn-pinjam" onclick="openForm('${m.nopol}')" 
+                            ${m.status === 'DIPINJAM' || !isLoggedIn ? 'disabled' : ''}>
+                        ${m.status === 'TERSEDIA' ? '📝 Pinjam Motor' : 'Tidak Tersedia'}
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // ============================================================
+        //  UPDATE NOPOL DROPDOWN
+        // ============================================================
+        function updateNopolDropdown() {
+            const available = motors.filter(m => m.status === 'TERSEDIA');
+            nopolSelect.innerHTML = `<option value="">Pilih Motor</option>` +
+                available.map(m => `<option value="${m.nopol}">${m.nopol} - ${m.tipe}</option>`).join('');
+        }
+
+        // ============================================================
+        //  RENDER MY REQUESTS
+        // ============================================================
+        function renderMyRequests() {
+            const userRequests = requests.filter(r => r.email === currentUser?.email);
+            if (userRequests.length === 0) {
+                myRequestsList.innerHTML = `<p style="color:#888;text-align:center;padding:20px;">Belum ada pengajuan</p>`;
+                return;
+            }
+            myRequestsList.innerHTML = userRequests.map(r => {
+                const statusMap = {
+                    'pending': '⏳ Menunggu Persetujuan',
+                    'approved': '✅ Disetujui',
+                    'rejected': '❌ Ditolak'
+                };
+                const statusClass = r.status === 'pending' ? 'pending' :
+                    r.status === 'approved' ? 'approved' : 'rejected';
+
+                // Approval steps info
+                const approvals = r.approvals || [];
+                const stepInfo = approvals.map(a =>
+                    `${a.name}: ${a.status === 'approved' ? '✅' : a.status === 'rejected' ? '❌' : '⏳'}`
+                ).join(' | ');
+
+                return `
+                    <div class="request-item">
+                        <div class="request-info">
+                            <span class="nopol">${r.nopol}</span>
+                            <span style="color:#888;margin:0 8px;">|</span>
+                            ${r.tujuan}
+                            <span style="color:#888;margin:0 8px;">|</span>
+                            ${r.tanggal}
+                            <div style="font-size:12px;color:#888;margin-top:2px;">${stepInfo}</div>
+                        </div>
+                        <span class="request-status ${statusClass}">
+                            ${statusMap[r.status] || r.status}
+                        </span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ============================================================
+        //  RENDER APPROVALS
+        // ============================================================
+        function renderApprovals() {
+            // Only approvers can see this
+            if (!currentUser || !APPROVER_EMAILS.includes(currentUser.email)) {
+                approvalTab.style.display = 'none';
+                return;
+            }
+
+            approvalTab.style.display = 'block';
+
+            // Find pending requests where this approver hasn't decided yet
+            const pendingRequests = requests.filter(r => {
+                if (r.status !== 'pending') return false;
+                const myApproval = r.approvals?.find(a => a.email === currentUser.email);
+                return myApproval && myApproval.status === 'pending';
+            });
+
+            const badgeCount = pendingRequests.length;
+            approvalBadge.textContent = badgeCount;
+
+            if (pendingRequests.length === 0) {
+                approvalList.innerHTML =
+                `<p style="color:#888;text-align:center;padding:20px;">Tidak ada pengajuan yang perlu disetujui</p>`;
+                return;
+            }
+
+            approvalList.innerHTML = pendingRequests.map(r => {
+                const approvals = r.approvals || [];
+                const stepInfo = approvals.map(a =>
+                    `${a.name}: ${a.status === 'approved' ? '✅' : a.status === 'rejected' ? '❌' : '⏳'}`
+                ).join(' | ');
+
+                // Find current approver's step position
+                const myApproval = approvals.find(a => a.email === currentUser.email);
+                const stepNumber = approvals.findIndex(a => a.email === currentUser.email) + 1;
+                const totalSteps = approvals.length;
+
+                return `
+                    <div class="approval-item">
+                        <div class="approval-header">
+                            <span class="approval-name">${r.nama}</span>
+                            <span class="status-badge pending">⏳ Menunggu ${currentUser.name}</span>
+                        </div>
+                        <div class="approval-detail">
+                            <strong>Motor:</strong> ${r.nopol} &nbsp;|&nbsp;
+                            <strong>Tujuan:</strong> ${r.tujuan} &nbsp;|&nbsp;
+                            <strong>Tanggal:</strong> ${r.tanggal}
+                            <div style="margin-top:4px;font-size:12px;color:#888;">
+                                Step ${stepNumber}/${totalSteps}: ${stepInfo}
+                            </div>
+                        </div>
+                        <div class="approval-actions">
+                            <button class="btn-approve" onclick="processApproval(${r.id}, 'approved')">✅ Setujui</button>
+                            <button class="btn-reject" onclick="processApproval(${r.id}, 'rejected')">❌ Tolak</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ============================================================
+        //  PROCESS APPROVAL
+        // ============================================================
+        function processApproval(requestId, decision) {
+            const request = requests.find(r => r.id === requestId);
+            if (!request) return;
+
+            const approvals = request.approvals || [];
+            const myApproval = approvals.find(a => a.email === currentUser.email);
+            if (!myApproval) return;
+
+            // Update my approval status
+            myApproval.status = decision;
+            myApproval.updatedAt = new Date().toISOString();
+
+            // Check if all approvers have decided
+            const allDecided = approvals.every(a => a.status !== 'pending');
+            const allApproved = approvals.every(a => a.status === 'approved');
+
+            let isFullyApproved = false;
+            let isRejected = false;
+
+            if (allDecided && allApproved) {
+                // FULLY APPROVED!
+                request.status = 'approved';
+                isFullyApproved = true;
+                // Update motor status
+                const motor = motors.find(m => m.nopol === request.nopol);
+                if (motor) {
+                    motor.status = 'DIPINJAM';
+                    motor.peminjam = request.nama;
+                }
+                // Notify user
+                const msg = `✅ SELAMAT! Peminjaman motor ${request.nopol} telah DISETUJUI oleh semua penyetuju.`;
+                showNotification(msg, 'success');
+                sendEmailNotification(request.email, '✅ Peminjaman Disetujui!', msg);
+                addLog(`✅ ${request.nopol} oleh ${request.nama} DISETUJUI semua`, 'approved');
+
+            } else if (allDecided && !allApproved) {
+                // REJECTED
+                request.status = 'rejected';
+                isRejected = true;
+                const msg = `❌ Maaf, peminjaman motor ${request.nopol} ditolak oleh salah satu penyetuju.`;
+                showNotification(msg, 'error');
+                sendEmailNotification(request.email, '❌ Peminjaman Ditolak', msg);
+                addLog(`❌ ${request.nopol} oleh ${request.nama} DITOLAK`, 'rejected');
+
+            } else {
+                // Still waiting for others
+                const pendingCount = approvals.filter(a => a.status === 'pending').length;
+                const msg =
+                    `📨 ${currentUser.name} telah ${decision === 'approved' ? 'menyetujui' : 'menolak'} ${request.nopol}. Menunggu ${pendingCount} penyetuju lainnya.`;
+                showNotification(msg, 'info');
+                addLog(`📨 ${currentUser.name} ${decision === 'approved' ? 'menyetujui' : 'menolak'} ${request.nopol}`, 'info');
+
+                // Notify next approver (or all pending)
+                approvals.forEach(a => {
+                    if (a.status === 'pending') {
+                        const msg2 =
+                            `📝 ${currentUser.name} telah ${decision === 'approved' ? 'menyetujui' : 'menolak'} pengajuan ${request.nopol} oleh ${request.nama}.`;
+                        sendEmailNotification(a.email, '📝 Update Persetujuan', msg2);
+                    }
+                });
+            }
+
+            // Notify user if not fully approved/rejected (already handled above)
+            if (!isFullyApproved && !isRejected) {
+                const statusMsg = decision === 'approved' ?
+                    `✅ ${currentUser.name} telah menyetujui pengajuan Anda untuk ${request.nopol}.` :
+                    `❌ ${currentUser.name} telah menolak pengajuan Anda untuk ${request.nopol}.`;
+                sendEmailNotification(request.email, '📝 Update Persetujuan', statusMsg);
+            }
+
+            renderAll();
+            switchTab('approval');
+        }
+
+        // ============================================================
+        //  EMAIL NOTIFICATION (SIMULASI)
+        // ============================================================
+        function sendEmailNotification(to, subject, message) {
+            console.log(`📧 TO: ${to}`);
+            console.log(`📧 SUBJECT: ${subject}`);
+            console.log(`📧 MESSAGE: ${message}`);
+            showNotification(`📧 Email ke ${to}: ${subject}`, 'info');
+            addLog(`📧 Email ke ${to}: ${subject}`, 'info');
+        }
+
+        // ============================================================
+        //  OPEN FORM
+        // ============================================================
+        function openForm(nopol) {
+            if (!isLoggedIn) {
+                showNotification('Silakan login terlebih dahulu!', 'warning');
+                loginOverlay.classList.add('active');
+                return;
+            }
+
+            switchTab('form');
+            if (nopol) {
+                document.getElementById('nopol').value = nopol;
+            }
+            // Pre-fill user data
+            if (currentUser) {
+                document.getElementById('nama').value = currentUser.name || '';
+                document.getElementById('email').value = currentUser.email || '';
+            }
+        }
+
+        // ============================================================
+        //  SWITCH TAB
+        // ============================================================
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            const tabBtn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+            if (tabBtn) tabBtn.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            const tabContent = document.getElementById(`tab-${tab}`);
+            if (tabContent) tabContent.classList.add('active');
+
+            if (tab === 'approval') renderApprovals();
+            if (tab === 'requests') renderMyRequests();
+            if (tab === 'log') renderLogs();
+        }
+
+        // ============================================================
+        //  FORM SUBMIT
+        // ============================================================
+        pinjamForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (!isLoggedIn) {
+                showNotification('Silakan login terlebih dahulu!', 'warning');
+                return;
+            }
+
+            const nama = document.getElementById('nama').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const dept = document.getElementById('dept').value.trim();
+            const tujuan = document.getElementById('tujuan').value.trim();
+            const tanggal = document.getElementById('tanggal').value;
+            const nopol = document.getElementById('nopol').value;
+
+            if (!nama || !email || !dept || !tujuan || !tanggal || !nopol) {
+                showNotification('⚠️ Semua field harus diisi!', 'warning');
+                return;
+            }
+
+            const motor = motors.find(m => m.nopol === nopol);
+            if (!motor || motor.status !== 'TERSEDIA') {
+                showNotification('⚠️ Motor tidak tersedia!', 'error');
+                return;
+            }
+
+            // Create request
+            const id = requestIdCounter++;
+            const approvals = APPROVERS.map(a => ({
+                name: a.name,
+                email: a.email,
+                status: 'pending',
+                updatedAt: null
+            }));
+
+            const request = {
+                id,
+                nama,
+                email,
+                dept,
+                tujuan,
+                tanggal,
+                nopol,
+                status: 'pending',
+                approvals,
+                createdAt: new Date().toISOString()
+            };
+
+            requests.push(request);
+
+            // Notify user
+            const msg = `📨 Pengajuan untuk motor ${nopol} telah dikirim. Menunggu persetujuan dari 3 penyetuju.`;
+            showNotification(msg, 'info');
+            addLog(`📝 ${nama} mengajukan ${nopol}`, 'pending');
+            sendEmailNotification(email, '📨 Pengajuan Dikirim', msg);
+
+            // Notify all approvers
+            approvals.forEach(a => {
+                const msg2 =
+                    `📝 ${nama} mengajukan peminjaman motor ${nopol}.\n\n` +
+                    `Tujuan: ${tujuan}\n` +
+                    `Tanggal: ${tanggal}\n` +
+                    `Departemen: ${dept}\n\n` +
+                    `Silakan login untuk memberikan persetujuan.`;
+                sendEmailNotification(a.email, '📝 Persetujuan Peminjaman', msg2);
+            });
+
+            // Reset form
+            pinjamForm.reset();
+            document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
+            if (currentUser) {
+                document.getElementById('nama').value = currentUser.name || '';
+                document.getElementById('email').value = currentUser.email || '';
+            }
+
+            renderAll();
+            switchTab('requests');
+        });
+
+        // ============================================================
+        //  AUTH
+        // ============================================================
+        function login(email, password) {
+            const user = USERS.find(u => u.email === email && u.password === password);
+            if (user) {
+                currentUser = user;
+                isLoggedIn = true;
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                return true;
+            }
+            return false;
+        }
+
+        function logout() {
+            currentUser = null;
+            isLoggedIn = false;
+            localStorage.removeItem('currentUser');
+            loginOverlay.classList.add('active');
+            appContent.style.display = 'none';
+            document.getElementById('loginError').textContent = '';
+            document.getElementById('loginForm').reset();
+        }
+
+        function checkAuth() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                try {
+                    const user = JSON.parse(savedUser);
+                    const valid = USERS.find(u => u.email === user.email);
+                    if (valid) {
+                        currentUser = valid;
+                        isLoggedIn = true;
+                        loginOverlay.classList.remove('active');
+                        appContent.style.display = 'block';
+                        updateUserInfo();
+                        renderAll();
+                        return true;
+                    }
+                } catch (e) { /* ignore */ }
+            }
+            loginOverlay.classList.add('active');
+            appContent.style.display = 'none';
+            return false;
+        }
+
+        function updateUserInfo() {
+            if (currentUser) {
+                userBadge.textContent = `👤 ${currentUser.name || currentUser.email}`;
+                const role = APPROVER_EMAILS.includes(currentUser.email) ? '🔑 Penyetuju' : '👤 User';
+                userRoleBadge.textContent = role;
+            }
+        }
+
+        // ============================================================
+        //  RENDER ALL
+        // ============================================================
+        function renderAll() {
+            renderMotors();
+            updateNopolDropdown();
+            renderMyRequests();
+            renderApprovals();
+            renderLogs();
+        }
+
+        // ============================================================
+        //  TAB CLICK
+        // ============================================================
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (!isLoggedIn) {
+                    showNotification('Silakan login terlebih dahulu!', 'warning');
+                    loginOverlay.classList.add('active');
+                    return;
+                }
+                switchTab(this.dataset.tab);
+            });
+        });
+
+        // ============================================================
+        //  FILTER EVENTS
+        // ============================================================
+        filterKategori.addEventListener('change', renderMotors);
+        filterStatus.addEventListener('change', renderMotors);
+        searchMotor.addEventListener('input', renderMotors);
+
+        // ============================================================
+        //  LOGIN FORM
+        // ============================================================
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (login(email, password)) {
+                document.getElementById('loginError').textContent = '';
+                loginOverlay.classList.remove('active');
+                appContent.style.display = 'block';
+                updateUserInfo();
+                renderAll();
+                showNotification(`Selamat datang, ${currentUser.name || email}!`, 'success');
+                addLog(`👤 ${currentUser.name || email} login`, 'info');
+            } else {
+                document.getElementById('loginError').textContent = 'Email atau password salah!';
+            }
+        });
+
+        // ============================================================
+        //  INIT
+        // ============================================================
+        document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
+        checkAuth();
+
+        if (!logs.length) {
+            addLog('🚀 Aplikasi Peminjaman Motor dimulai', 'info');
+        }
+
+        console.log('🏍️ Aplikasi Peminjaman Motor siap digunakan!');
+        console.log('📧 Penyetuju:', APPROVERS.map(a => `${a.name}: ${a.email}`).join(', '));
+    </script>
+
 </body>
 </html>
