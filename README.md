@@ -10,7 +10,7 @@ Web responsif untuk pengajuan peminjaman motor dengan login asli, database Supab
 4. Jika Harifah menyetujui, pengajuan masuk ke antrean **Ray** untuk tahap 2.
 5. Jika salah satu menolak, status akhir menjadi **Ditolak** dan motor kembali tersedia.
 6. Jika keduanya menyetujui, status akhir menjadi **Disetujui** dan motor menjadi dipinjam.
-7. Notifikasi pengajuan dan keputusan akhir dikirim ke **Ftrwhyni15@gmail.com**.
+7. Notifikasi pengajuan dan keputusan akhir dikirim ke **email dan notifikasi penyetuju**.
 
 Admin Pengelola tidak ikut menyetujui. Admin hanya mengatur peran akun serta memperbaiki status dan nama peminjam pada data motor.
 
@@ -65,9 +65,9 @@ Masukkan keduanya ke `config.js`:
 
 ```js
 window.MOTOR_DESK_CONFIG = Object.freeze({
-  supabaseUrl: "https://PROJECT-ANDA.supabase.co",
-  supabaseAnonKey: "ANON_PUBLIC_KEY_ANDA",
-  notificationEmail: "Ftrwhyni15@gmail.com",
+  supabaseUrl: "NEXT_PUBLIC_SUPABASE_URL=https://scvpascdvmkthfncgdpg.supabase.co",
+  supabaseAnonKey: "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_a0jAOI1ucR5DSTf4L2YBPg_30mDDdcs",
+  notificationEmail: "penyetuju",
   staffEmails: Object.freeze({
     admin: "Ftrwhyni15@gmail.com",
     ray: "ftrmtch@gmail.com",
@@ -89,7 +89,7 @@ Daftarkan akun awal berikut:
 
 | Akun | Email awal | Pilihan saat daftar | Peran otomatis |
 | --- | --- | --- | --- |
-| Admin Pengelola | `Ftrwhyni15@gmail.com` | Karyawan / Pengaju | Admin Pengelola |
+| Admin Pengelola | `Ftrwhyni15@gmail.com` | Karyawan | Admin Pengelola |
 | Harifah | `fitriwahyuni336@gmail.com` | Penyetuju → Harifah | Penyetuju tahap 1 |
 | Ray | `ftrmtch@gmail.com` | Penyetuju → Ray | Penyetuju tahap 2 |
 
