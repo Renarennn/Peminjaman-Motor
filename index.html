@@ -1,182 +1,95 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#00549a">
-  <meta name="description" content="Sistem peminjaman motor Astra Motor Jakarta">
-  <title>Motor Desk · Astra Motor Jakarta</title>
-  <link rel="icon" type="image/png" href="logo-peminjaman-motor.png">
-  <link rel="apple-touch-icon" href="logo-peminjaman-motor.png">
-  <link rel="stylesheet" href="styles.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="config.js"></script>
-  <script defer src="app.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>MotorPool Management</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="toast" class="toast" hidden></div>
-
-  <section id="authScreen" class="auth-screen">
-    <div class="auth-brand">
-      <div class="auth-brand__content">
-        <span class="company-kicker">ASTRA MOTOR JAKARTA</span>
-        <img class="app-logo app-logo--hero" src="logo-peminjaman-motor.png" alt="Logo Peminjaman Motor">
-        <h1>peminjaman motor</h1>
-        <p>Cek ketersediaan, ajukan peminjaman, dan pantau dua tahap persetujuan secara aman dari perangkat apa pun.</p>
-        <div class="approval-route">
-          <span><b>1</b> Harifah</span><i></i><span><b>2</b> Ray</span><i></i><span class="route-finish">Selesai</span>
-        </div>
-      </div>
-      <div class="auth-brand__footer"><span class="live-dot"></span> Internal Vehicle Request System</div>
-    </div>
-
-    <div class="auth-panel">
-      <div class="auth-card">
-        <div class="auth-card__heading">
-          <p class="eyebrow">AKSES APLIKASI</p>
-          <h2 id="authTitle">Masuk ke Motor Desk</h2>
-          <p id="authSubtitle">Gunakan akun yang sudah terdaftar.</p>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🏍️ MotorPool Management</h1>
+            <p>Kelola peminjaman motor dengan mudah</p>
         </div>
 
-        <div class="auth-tabs" role="tablist">
-          <button id="loginTab" class="auth-tab active" type="button" data-auth-mode="login">Masuk</button>
-          <button id="registerTab" class="auth-tab" type="button" data-auth-mode="register">Daftar Akun</button>
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="daftar">📋 Daftar Motor</button>
+            <button class="tab-btn" data-tab="form">📝 Form Peminjaman</button>
+            <button class="tab-btn" data-tab="log">📊 Log Aktivitas</button>
         </div>
 
-        <form id="authForm" class="auth-form">
-          <label id="fullNameField" hidden>
-            <span>Nama lengkap</span>
-            <input id="authFullName" type="text" autocomplete="name" placeholder="Nama lengkap">
-          </label>
-          <label id="accountTypeField" hidden>
-            <span>Jenis akun</span>
-            <select id="authAccountType">
-              <option value="borrower">Karyawan</option>
-              <option value="approver">Penyetuju</option>
-              <option value="Fixed">Admin</option>
+        <!-- Filter -->
+        <div class="filter-section" id="filterSection">
+            <select id="filterKategori">
+                <option value="all">Semua Kategori</option>
+                <option value="MATIC">MATIC</option>
+                <option value="SPORT">SPORT</option>
+                <option value="BIGBIKE">BIGBIKE</option>
+                <option value="BOX HMS">BOX HMS</option>
+                <option value="EV">EV</option>
+                <option value="SPORT OK">SPORT OK</option>
             </select>
-          </label>
-          <label id="approverIdentityField" hidden>
-            <span>Daftar sebagai</span>
-            <select id="authApproverIdentity">
-              <option value="harifah">Penyetuju tahap 1</option>
-              <option value="ray">Penyetuju tahap 2</option>
+            <select id="filterStatus">
+                <option value="all">Semua Status</option>
+                <option value="TERSEDIA">Tersedia</option>
+                <option value="DIPINJAM">Dipinjam</option>
             </select>
-          </label>
-          <label>
-            <span>Email</span>
-            <input id="authEmail" type="email" autocomplete="email" required placeholder="nama@perusahaan.com">
-          </label>
-          <label>
-            <span>Password</span>
-            <div class="password-field">
-              <input id="authPassword" type="password" autocomplete="current-password" required minlength="8" placeholder="Minimal 8 karakter">
-              <button id="togglePassword" type="button" aria-label="Tampilkan password">Lihat</button>
-            </div>
-          </label>
-          <p id="authError" class="form-error" hidden></p>
-          <button id="authSubmit" class="button button--primary button--full" type="submit">Masuk</button>
-        </form>
-        <p class="auth-note">Penyetuju hanya Harifah dan Ray. Admin dikenali dari email Admin awal saat mendaftar.</p>
-        <div id="setupWarning" class="setup-warning" hidden>
-          Supabase belum dikonfigurasi. Isi <code>config.js</code> sebelum login.
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div id="appScreen" class="app-shell" hidden>
-    <header class="topbar">
-      <button class="brand-lockup brand-button" type="button" data-view-target="dashboard">
-        <img class="app-logo app-logo--header" src="logo-peminjaman-motor.png" alt="">
-        <span><strong>motor</strong><em>desk</em><small>ASTRA MOTOR JAKARTA</small></span>
-      </button>
-
-      <nav id="mainNav" class="main-nav" aria-label="Navigasi utama">
-        <button class="nav-button active" type="button" data-view-target="dashboard">Beranda</button>
-        <button class="nav-button" type="button" data-view-target="myRequests">Pengajuan Saya</button>
-        <button id="approvalNav" class="nav-button" type="button" data-view-target="approvals" hidden>Persetujuan <span id="approvalBadge" class="badge" hidden>0</span></button>
-        <button id="adminNav" class="nav-button" type="button" data-view-target="admin" hidden>Pengaturan Admin</button>
-      </nav>
-
-      <div class="user-menu">
-        <div class="user-avatar" id="userAvatar">U</div>
-        <div class="user-copy"><strong id="userName">Pengguna</strong><span id="userRole">Peminjam</span></div>
-        <button id="logoutButton" class="icon-button" type="button" title="Keluar" aria-label="Keluar">↗</button>
-      </div>
-    </header>
-
-    <main class="main-content">
-      <section id="dashboardView" class="view">
-        <div class="page-heading page-heading--dashboard">
-          <div>
-            <p class="eyebrow"><span></span> OPERASIONAL KENDARAAN</p>
-            <h1>Motor yang tersedia,<br><em>siap dipakai.</em></h1>
-            <p>Cek status armada dan ajukan peminjaman untuk kebutuhan kerja.</p>
-          </div>
-
-        <div class="stats-grid">
-          <article class="stat-card stat-card--blue"><span class="stat-icon">✓</span><div><strong id="availableStat">0</strong><small>Motor tersedia</small></div></article>
-          <article class="stat-card"><span class="stat-icon">●</span><div><strong id="borrowedStat">0</strong><small>Sedang dipinjam</small></div></article>
-          <article class="stat-card stat-card--red"><span class="stat-icon">2</span><div><strong>Harifah → Ray</strong><small>Alur persetujuan</small></div></article>
+            <input type="text" class="search-box" id="searchMotor" placeholder="🔍 Cari Nopol atau Tipe...">
         </div>
 
-        <div class="dashboard-grid">
-          <section class="surface fleet-surface">
-            <div class="surface-heading">
-              <div><p class="eyebrow eyebrow--muted">LIVE FLEET BOARD</p><h2>Daftar motor</h2></div>
-              <span id="motorCount" class="count-pill">0 unit</span>
-            </div>
-            <div class="filters">
-              <label class="search-field"><span>⌕</span><input id="motorSearch" type="search" placeholder="Cari nopol, tipe, peminjam..."></label>
-              <select id="categoryFilter" aria-label="Filter kategori"><option value="ALL">Semua kategori</option></select>
-              <button id="refreshMotors" class="icon-button" type="button" title="Perbarui">↻</button>
-            </div>
-            <div id="motorGrid" class="motor-grid"></div>
-          </section>
+        <!-- Motor List -->
+        <div id="motorList" class="motor-grid"></div>
 
-          <aside id="loanFormSurface" class="surface loan-surface">
-            <div class="surface-heading surface-heading--left"><span class="heading-icon">▣</span><div><p class="eyebrow eyebrow--muted">MULAI PENGAJUAN</p><h2>Form peminjaman</h2></div></div>
-            <p class="surface-intro">Pengajuan akan diproses berurutan oleh Harifah dan Ray.</p>
-            <form id="loanForm" class="stack-form">
-              <label><span>Nama</span><input id="loanName" required readonly></label>
-              <label><span>Email</span><input id="loanEmail" type="email" required readonly></label>
-              <label><span>Dept</span><input id="loanDept" required placeholder="Contoh: Marketing"></label>
-              <label><span>Tujuan</span><textarea id="loanPurpose" required rows="3" placeholder="Keperluan peminjaman motor"></textarea></label>
-              <div class="form-grid"><label><span>Tanggal</span><input id="loanDate" type="date" required></label><label><span>Nopol</span><select id="loanPlate" required><option value="">Pilih motor</option></select></label></div>
-              <div class="workflow-note"><b>1</b><span>Harifah menyetujui</span><i></i><b>2</b><span>Ray menyetujui</span></div>
-              <button class="button button--primary button--full" type="submit">Ajukan peminjaman →</button>
+        <!-- Form Section -->
+        <div class="form-section" id="formSection">
+            <h2>📝 Form Peminjaman Motor</h2>
+            <form id="pinjamForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nama">Nama Lengkap</label>
+                        <input type="text" id="nama" placeholder="Masukkan nama" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="email@domain.com" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dept">Departemen</label>
+                        <input type="text" id="dept" placeholder="Departemen / Divisi" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tujuan">Tujuan Peminjaman</label>
+                        <input type="text" id="tujuan" placeholder="Tujuan peminjaman" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tanggal">Tanggal Peminjaman</label>
+                        <input type="date" id="tanggal" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nopol">Nomor Polisi</label>
+                        <select id="nopol" required>
+                            <option value="">Pilih Motor</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit" id="submitPinjam">Ajukan Peminjaman</button>
             </form>
-          </aside>
         </div>
-      </section>
 
-      <section id="myRequestsView" class="view" hidden>
-        <div class="page-heading"><div><p class="eyebrow"><span></span> RIWAYAT PEMINJAMAN</p><h1>Pengajuan <em>saya.</em></h1><p>Pantau status Harifah, Ray, dan keputusan akhir.</p></div><button id="refreshRequests" class="button button--outline" type="button">Perbarui</button></div>
-        <div id="myRequestList" class="request-list"></div>
-      </section>
-
-      <section id="approvalsView" class="view" hidden>
-        <div class="page-heading"><div><p class="eyebrow"><span></span> RUANG PERSETUJUAN</p><h1 id="approvalTitle">Persetujuan <em>Harifah.</em></h1><p id="approvalDescription">Tinjau pengajuan yang menunggu keputusan Anda.</p></div><div class="approval-role-card"><strong id="approvalStep">1</strong><span id="approvalRoleLabel">Persetujuan Harifah</span></div></div>
-        <div id="approvalList" class="request-list"></div>
-      </section>
-
-      <section id="adminView" class="view" hidden>
-        <div class="page-heading"><div><p class="eyebrow"><span></span> KONTROL APLIKASI</p><h1>Pengaturan <em>admin.</em></h1><p>Kelola peran akun dan perbaiki data motor.</p></div><span class="admin-only">KHUSUS ADMIN PENGELOLA</span></div>
-        <div class="admin-grid">
-          <section class="surface">
-            <div class="surface-heading"><div><p class="eyebrow eyebrow--muted">AKUN & HAK AKSES</p><h2>Daftar pengguna</h2></div><button id="refreshUsers" class="icon-button" type="button">↻</button></div>
-            <div id="userTable" class="table-wrap"></div>
-          </section>
-          <section class="surface">
-            <div class="surface-heading"><div><p class="eyebrow eyebrow--muted">PERBAIKAN ARMADA</p><h2>Kelola data motor</h2></div></div>
-            <div id="adminMotorTable" class="table-wrap"></div>
-          </section>
+        <!-- Log Section -->
+        <div class="log-section" id="logSection">
+            <h3 style="margin-bottom:8px;font-size:16px;color:#1a237e;">📊 Log Aktivitas</h3>
+            <div id="logEntries"></div>
         </div>
-      </section>
-    </main>
+    </div>
 
-    <footer class="site-footer"><span><i class="live-dot"></i> motor desk</span><span>Login asli · Database Supabase · Tema Astra Motor Jakarta</span><span>01 Sep 2026</span></footer>
-  </div>
+    <script src="app.js"></script>
 </body>
 </html>
